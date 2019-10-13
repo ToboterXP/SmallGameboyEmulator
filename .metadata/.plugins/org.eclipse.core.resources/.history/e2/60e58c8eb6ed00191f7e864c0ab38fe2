@@ -1,0 +1,18 @@
+/*
+ * Gameboy.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include "Gameboy.h"
+
+Gameboy::Gameboy() {
+	this->memory = new MemoryManager();
+	this->memory.addSection(MemorySection(0x00,0x200));
+}
+
+Gameboy::~Gameboy() {
+	delete this->memory;
+}
+

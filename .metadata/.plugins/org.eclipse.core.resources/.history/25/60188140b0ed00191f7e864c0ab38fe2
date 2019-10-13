@@ -1,0 +1,18 @@
+/*
+ * MemoryManager.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include "MemoryManager.h"
+
+MemoryManager::MemoryManager() {
+	// TODO Auto-generated constructor stub
+
+}
+
+MemoryManager::~MemoryManager() {
+	// TODO Auto-generated destructor stub
+}
+

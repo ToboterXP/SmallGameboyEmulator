@@ -1,0 +1,22 @@
+/*
+ * MemorySection.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include "MemorySection.h"
+
+namespace memory {
+
+MemorySection::MemorySection(uint16_t start, uint16_t length) {
+	this->memoryLength = length;
+	this->memoryStart = start;
+	this->memory = new uint8_t[length];
+}
+
+MemorySection::~MemorySection() {
+	// TODO Auto-generated destructor stub
+}
+
+} /* namespace memory */

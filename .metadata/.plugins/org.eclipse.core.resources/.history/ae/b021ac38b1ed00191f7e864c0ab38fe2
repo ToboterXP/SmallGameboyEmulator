@@ -1,0 +1,21 @@
+/*
+ * MemorySection.h
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef MEMORYSECTION_H_
+#define MEMORYSECTION_H_
+
+namespace memory {
+
+class MemorySection {
+public:
+	MemorySection();
+	virtual ~MemorySection();
+};
+
+} /* namespace memory */
+
+#endif /* MEMORYSECTION_H_ */

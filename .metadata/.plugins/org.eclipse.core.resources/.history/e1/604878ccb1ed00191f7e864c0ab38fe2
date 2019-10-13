@@ -1,0 +1,27 @@
+/*
+ * MemorySection.h
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef MEMORYSECTION_H_
+#define MEMORYSECTION_H_
+
+#include <cstdint>
+
+namespace memory {
+
+class MemorySection {
+protected:
+	uint8_t * memory;
+	uint16_t memoryLength;
+	uint16_t memoryStart;
+public:
+	MemorySection(uint16_t start, uint16_t length);
+	virtual ~MemorySection();
+};
+
+} /* namespace memory */
+
+#endif /* MEMORYSECTION_H_ */

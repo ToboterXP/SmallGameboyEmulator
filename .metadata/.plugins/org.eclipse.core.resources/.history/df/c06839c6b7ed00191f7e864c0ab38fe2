@@ -1,0 +1,11 @@
+
+#include <iostream>
+
+using namespace std;
+#include "Gameboy.h"
+
+int main() {
+	Gameboy gb ();
+	gb->test();
+	return 0;
+}
