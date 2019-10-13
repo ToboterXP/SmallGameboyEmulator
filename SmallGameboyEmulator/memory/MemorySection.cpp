@@ -9,7 +9,7 @@
 
 namespace memory {
 
-MemorySection::MemorySection(uint16_t start, uint16_t length) {
+MemorySection::MemorySection(uint16_t start, uint32_t length) {
 	this->memoryLength = length;
 	this->memoryStart = start;
 	this->memoryEnd = start+length;

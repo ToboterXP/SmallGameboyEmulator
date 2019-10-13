@@ -9,16 +9,19 @@
 #define GAMEBOY_H_
 
 #include <memory/MemoryManager.h>
+#include <processor/Processor.h>
 #include <iostream>
 #include <cstdint>
 #include <string>
 
 using namespace memory;
+using namespace proc;
 using namespace std;
 
 class Gameboy {
 protected:
 	MemoryManager * memory;
+	Processor * processor;
 public:
 	Gameboy();
 	virtual ~Gameboy();

@@ -1,0 +1,15 @@
+
+#include <iostream>
+
+using namespace std;
+#include "Gameboy.h"
+
+int main() {
+	cout << "3\n";
+	Gameboy * gb = new Gameboy();
+	cout << "1\n";
+	gb->test();
+	cout << "2\n";
+	delete gb;
+	return 0;
+}

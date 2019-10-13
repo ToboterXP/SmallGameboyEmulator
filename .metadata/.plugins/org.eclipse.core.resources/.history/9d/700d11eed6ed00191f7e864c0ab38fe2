@@ -1,0 +1,21 @@
+/*
+ * Processor.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include <processor/Processor.h>
+
+namespace proc {
+
+Processor::Processor() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Processor::~Processor() {
+	// TODO Auto-generated destructor stub
+}
+
+} /* namespace proc */

@@ -1,0 +1,191 @@
+/*
+ * i00_1f.h
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef I00_1F_H_
+#define I00_1F_H_
+
+#include <cstdint>
+#include "Processor.h"
+
+namespace proc {
+
+int execute00_1f(uint8_t opcode, Processor * proc) {
+	switch (opcode) {
+	case 0x00: //nop
+		return 1;
+	case 0x01: //ld bc,d16
+		proc->setBC(proc->getInstruction16());
+		return 3;
+	case 0x02: //ld (bc),a
+		proc->memory->writeMemory(proc->getBC(), proc->a);
+		return 2;
+	case 0x03: //inc bc
+
+		proc->setBC(proc->getBC()+1);
+		return 2;
+	case 0x04: //inc b
+		uint8_t prev = proc->b;
+		proc->b++;
+		proc->setFlag(ZERO_FLAG,proc->b==0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+1)&0x10==0x10);
+		return 1;
+	case 0x05: //dec b
+		uint8_t prev = proc->b;
+		proc->b--;
+		proc->setFlag(ZERO_FLAG,proc->b==0);
+		proc->setFlag(SUB_FLAG,1);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf-1)&0x10==0x10);
+		return 1;
+	case 0x06: //ld b,d8
+		proc->b = proc->getInstruction8();
+		return 2;
+	case 0x07: //rlca rotate a left
+		uint8_t bit7 = (proc->a)>>7;
+		proc->setFlag(CARRY_FLAG, bit7);
+		proc->a <<= 1;
+		proc->a &= ~1;
+		proc->a |= bit7;
+		proc->setFlag(ZERO_FLAG,0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,0);
+
+		return 2;
+	case 0x08: //ld (a16), sp
+		proc->writeMemory16(proc->getInstruction16(), proc->sp);
+		return 5;
+	case 0x09: //add hl,bc
+		uint16_t prev1 = proc->getHL();
+		proc->setHL(proc->getHL() + proc->getBC());
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+proc->getBC())&0x10==0x10);
+		proc->setFlag(CARRY_FLAG,prev1 > proc->getHL());
+		return 2;
+	case 0x0a: //ld a,(bc)
+		proc->a = proc->memory->readMemory(proc->getBC());
+		return 2;
+	case 0x0b: //dec bc
+		proc->setBC(proc->getBC()-1);
+		return 2;
+	case 0x0c: //inc c
+		uint8_t prev = proc->c;
+		proc->c++;
+		proc->setFlag(ZERO_FLAG,proc->c==0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+1)&0x10==0x10);
+		return 1;
+	case 0x0d: //dec c
+		uint8_t prev = proc->c;
+		proc->c--;
+		proc->setFlag(ZERO_FLAG,proc->c==0);
+		proc->setFlag(SUB_FLAG,1);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf-1)&0x10==0x10);
+		return 1;
+	case 0x0e: // ld c,d8
+		proc->c = proc->memory->readMemory(proc->getInstruction8());
+		return 2;
+	case 0x0f: //rrca
+		uint8_t bit0 = proc->a & 1;
+		proc->setFlag(CARRY_FLAG, bit0);
+		proc->a >>= 1;
+		proc->a &= ~(1<<7);
+		proc->a |= bit0;
+		proc->setFlag(ZERO_FLAG,0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,0);
+		return 1;
+	case 0x10: // stop 0
+		//TODO: add instruction stop
+		proc->getInstruction8();
+		return 1;
+	case 0x11: //ld de,d16
+		proc->setDE(proc->getInstruction16());
+		return 3;
+	case 0x12: //ld (de),a
+		proc->memory->writeMemory(proc->getDE(),proc->a);
+		return 2;
+	case 0x13: //inc de
+		proc->setDE(proc->getDE()+1);
+		return 2;
+	case 0x14: //inc d
+		uint8_t prev = proc->d;
+		proc->d++;
+		proc->setFlag(ZERO_FLAG,proc->d==0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+1)&0x10==0x10);
+		return 1;
+	case 0x15: //dec d
+		uint8_t prev = proc->d;
+		proc->d--;
+		proc->setFlag(ZERO_FLAG,proc->d==0);
+		proc->setFlag(SUB_FLAG,1);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf-1)&0x10==0x10);
+		return 1;
+	case 0x16: //ld d,d8
+		proc->d = proc->getInstruction8();
+		return 2;
+	case 0x17: //rla
+		uint8_t bit7 = (proc->a)>>7;
+		uint8_t carry = proc->getFlag(CARRY_FLAG);
+		proc->setFlag(CARRY_FLAG, bit7);
+		proc->a <<= 1;
+		proc->a &= ~1;
+		proc->a |= carry;
+		proc->setFlag(ZERO_FLAG,0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,0);
+		return 1;
+	case 0x18: //jr r8
+		proc->pc += (int8_t)(proc->getInstruction8());
+		return 3;
+	case 0x19: //add hl,DE
+		uint16_t prev1 = proc->getHL();
+		proc->setHL(proc->getHL() + proc->getDE());
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+proc->getDE()&0xf)&0x10==0x10);
+		proc->setFlag(CARRY_FLAG,prev1 > proc->getHL());
+		return 2;
+	case 0x1a: //ld a,(de)
+		proc->a = proc->memory->readMemory(proc->getDE());
+		return 2;
+	case 0x1b: //dec de
+		proc->setDE(proc->getDE()-1);
+		return 2;
+	case 0x1c: //inc e
+		uint8_t prev = proc->e;
+		proc->e++;
+		proc->setFlag(ZERO_FLAG,proc->e==0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+1)&0x10==0x10);
+		return 1;
+	case 0x1d: //dec e
+		uint8_t prev = proc->e;
+		proc->e++;
+		proc->setFlag(ZERO_FLAG,proc->e==0);
+		proc->setFlag(SUB_FLAG,1);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf-1)&0x10==0x10);
+		return 1;
+	case 0x1e: //ld e,d8
+		proc->e = proc->getInstruction8();
+		return 2;
+	case 0x1f: //rra
+		uint8_t bit0 = proc->a & 1;
+		uint8_t carry = proc->getFlag(CARRY_FLAG);
+		proc->setFlag(CARRY_FLAG, bit0);
+		proc->a >>= 1;
+		proc->a &= ~(1<<7);
+		proc->a |= carry<<7;
+		proc->setFlag(ZERO_FLAG,0);
+		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(HALF_CARRY_FLAG,0);
+		return 1;
+	}
+}
+
+}
+
+#endif /* I00_1F_H_ */

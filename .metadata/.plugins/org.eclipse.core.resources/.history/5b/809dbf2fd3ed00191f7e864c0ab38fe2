@@ -1,0 +1,21 @@
+/*
+ * Processor.h
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef PROCESSOR_H_
+#define PROCESSOR_H_
+
+namespace proc {
+
+class Processor {
+public:
+	Processor();
+	virtual ~Processor();
+};
+
+} /* namespace proc */
+
+#endif /* PROCESSOR_H_ */

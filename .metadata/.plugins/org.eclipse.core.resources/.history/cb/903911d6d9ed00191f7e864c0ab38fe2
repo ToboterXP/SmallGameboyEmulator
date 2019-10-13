@@ -1,0 +1,71 @@
+/*
+ * Processor.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include <processor/Processor.h>
+
+namespace proc {
+
+Processor::Processor(MemoryManager * mem) {
+	memory = mem;
+	a = 1;
+	f = 0xb0;
+	b = 0;
+	c = 0x13;
+	d = 0;
+	e = 0xd8;
+	h = 0x01;
+	l = 0x4d;
+	sp = 0xfffe;
+	pc = 0x100;
+
+}
+
+Processor::~Processor() {
+	// TODO Auto-generated destructor stub
+}
+
+//virtual 16bit registers
+uint16_t Processor::getAF() {
+	return (((uint16_t)a)<<8) + (uint16_t)f;
+}
+void Processor::setAF(uint16_t val) {
+	a = val >> 8;
+	f = (uint8_t)val;
+}
+uint16_t Processor::getBC() {
+	return (((uint16_t)b)<<8) + (uint16_t)c;
+}
+void Processor::setBC(uint16_t val) {
+	b = val >> 8;
+	c = (uint8_t)val;
+}
+uint16_t Processor::getDE() {
+	return (((uint16_t)d)<<8) + (uint16_t)e;
+}
+void Processor::setDE(uint16_t val) {
+	d = val >> 8;
+	e = (uint8_t)val;
+}
+uint16_t Processor::getHL() {
+	return (((uint16_t)h)<<8) + (uint16_t)l;
+}
+void Processor::setHL(uint16_t val) {
+	h = val >> 8;
+	l = (uint8_t)val;
+}
+
+uint8_t Processor::getInstructionInt8() {
+	uint8_t ret = memory->readMemory(pc++);
+	return ret;
+}
+uint16_t Processor::getInstructionInt16() {
+	uint16_t ret = 0;
+	ret &= ((uint16_t)(memory->readMemory(pc++))) << 8;
+	ret &= (uint16_t)(memory->readMemory(pc++));
+	return ret;
+}
+} /* namespace proc */

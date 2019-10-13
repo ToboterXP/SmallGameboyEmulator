@@ -16,12 +16,12 @@ namespace memory {
 class MemorySection {
 protected:
 	uint8_t * memory;
-	uint16_t memoryLength;
+	uint32_t memoryLength;
 	uint16_t memoryStart;
-	uint16_t memoryEnd;
+	uint32_t memoryEnd;
 public:
 	bool isValid = true;
-	MemorySection(uint16_t start, uint16_t length);
+	MemorySection(uint16_t start, uint32_t length);
 	virtual ~MemorySection();
 
 	bool containsAddress(uint16_t addr);

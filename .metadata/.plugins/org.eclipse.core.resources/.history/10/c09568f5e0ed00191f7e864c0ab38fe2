@@ -1,0 +1,11 @@
+
+#include <cstdint>
+#include <processor/Processor.h>
+
+namespace proc {
+
+int executeInstruction(uint8_t opcode,Processor * proc ) {
+
+	return 0;
+}
+}
