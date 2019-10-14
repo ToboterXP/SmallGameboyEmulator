@@ -1,0 +1,204 @@
+/*
+ * ic0_df.h
+ *
+ *  Created on: 14.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef IC0_DF_H_
+#define IC0_DF_H_
+
+
+#include "ic0_df.h"
+#include <cstdint>
+#include <processor/Processor.h>
+
+namespace proc {
+
+void _call(Processor * proc,std::uint16_t addr) {
+	proc->push16(proc->pc);
+	proc->pc = addr;
+}
+
+void _ret(Processor * proc) {
+	proc->pc = proc->pop16();
+}
+
+int executeC0_DF(uint8_t opcode, Processor * proc) {
+	switch(opcode) {
+	case 0xc0: //ret nz
+		if (!proc->getFlag(ZERO_FLAG)) {
+			_ret(proc);
+			return 5;
+		} else {
+			return 2;
+		}
+	case 0xc1: //pop bc
+		proc->setBC(proc->pop16());
+		return 3;
+	case 0xc2: //jp nz,a16
+		if (!proc->getFlag(ZERO_FLAG)) {
+			proc->pc = proc->getInstruction16();
+			return 4;
+		} else {
+			return 3;
+		}
+	case 0xc3: //jp a16
+		proc->pc = proc->getInstruction16();
+		return 4;
+	case 0xc4: //call nz,a16
+		if (!proc->getFlag(ZERO_FLAG)) {
+			_call(proc,proc->getInstruction16());
+			return 6;
+		} else {
+			return 3;
+		}
+	case 0xc5: //push bc
+		proc->push16(proc->getBC());
+		return 4;
+	case 0xc6: //add a,d8
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		uint8_t b = proc->getInstruction8();
+		proc->a += b;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+		proc->setFlag(ZERO_FLAG,proc->a==0);
+		return 2;
+	case 0xc7: //rst 00h
+		_call(proc,0x00);
+		return 4;
+	case 0xc8: //ret z
+		if (proc->getFlag(ZERO_FLAG)) {
+			_ret(proc);
+			return 5;
+		} else {
+			return 2;
+		}
+	case 0xc9: //ret
+		_ret(proc);
+		return 4;
+	case 0xca: //jp z,a16
+		if (proc->getFlag(ZERO_FLAG)) {
+			proc->pc = proc->getInstruction16();
+			return 4;
+		} else {
+			return 3;
+		}
+	case 0xcb: //prefix cb
+		//TODO: add call to CB instructions
+		return 1;
+	case 0xcc: //call z,a16
+		if (proc->getFlag(ZERO_FLAG)) {
+			_call(proc,proc->getInstruction16());
+			return 6;
+		} else {
+			return 3;
+		}
+	case 0xcd: //call a16
+		_call(proc,proc->getInstruction16());
+		return 6;
+	case 0xce: //adc a,d8
+		proc->setFlag(SUB_FLAG,0);
+		prev = proc->a;
+		b = proc->getInstruction8() + proc->getFlag(CARRY_FLAG);
+		proc->a += b;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+		proc->setFlag(ZERO_FLAG,proc->a==0);
+		return 2;
+	case 0xcf: //rst 08h
+		_call(proc,0x08);
+		return 2;
+	case 0xd0: //ret nc
+		if (!proc->getFlag(CARRY_FLAG)) {
+			_ret(proc);
+			return 5;
+		} else {
+			return 2;
+		}
+	case 0xd1: //pop de
+		proc->setDE(proc->pop16());
+		return 3;
+	case 0xd2: //jp nc,a16
+		if (!proc->getFlag(CARRY_FLAG)) {
+			proc->pc = proc->getInstruction16();
+			return 4;
+		} else {
+			return 3;
+		}
+	case 0xd3: //-
+		proc->unknownOpcode();
+		return 4;
+	case 0xd4: //call nc,a16
+		if (!proc->getFlag(CARRY_FLAG)) {
+			_call(proc,proc->getInstruction16());
+			return 6;
+		} else {
+			return 3;
+		}
+	case 0xd5: //push de
+		proc->push16(proc->getDE());
+		return 4;
+	case 0xd6: //sub a,d8
+		proc->setFlag(SUB_FLAG,1);
+		prev = proc->a;
+		b = proc->getInstruction8();
+		proc->a -=b;
+		proc->setFlag(CARRY_FLAG,prev<proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,((prev&0xf- b&0xf)&0x10)==0x10);
+		proc->setFlag(ZERO_FLAG,proc->a==0);
+		return 2;
+	case 0xd7: //rst 10h
+		_call(proc,0x10);
+		return 4;
+	case 0xd8: //ret c
+		if (proc->getFlag(CARRY_FLAG)) {
+			_ret(proc);
+			return 5;
+		} else {
+			return 2;
+		}
+	case 0xd9: //reti
+		_ret(proc);
+		proc->interruptMasterEnable = true;
+		return 4;
+	case 0xda: //jp c,a16
+		if (proc->getFlag(CARRY_FLAG)) {
+			proc->pc = proc->getInstruction16();
+			return 4;
+		} else {
+			return 3;
+		}
+	case 0xdb: //-
+		proc->unknownOpcode();
+		return 1;
+	case 0xdc: //call c,a16
+		if (proc->getFlag(CARRY_FLAG)) {
+			_call(proc,proc->getInstruction16());
+			return 6;
+		} else {
+			return 3;
+		}
+	case 0xdd: //-
+		proc->unknownOpcode();
+		return 6;
+	case 0xde: //sbc a,d8
+		proc->setFlag(SUB_FLAG,1);
+		prev = proc->a;
+		b = proc->getInstruction8() + proc->getFlag(CARRY_FLAG);
+		proc->a -=b;
+		proc->setFlag(CARRY_FLAG,prev<proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,((prev&0xf- b&0xf)&0x10)==0x10);
+		proc->setFlag(ZERO_FLAG,proc->a==0);
+		return 2;
+	case 0xdf: //rst 18h
+		_call(proc,0x18);
+		return 2;
+	}
+}
+
+}
+
+
+#endif /* IC0_DF_H_ */

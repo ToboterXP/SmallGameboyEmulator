@@ -1,0 +1,18 @@
+/*
+ * ie0_ff.h
+ *
+ *  Created on: 14.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef IE0_FF_H_
+#define IE0_FF_H_
+
+
+#include <cstdint>
+#include "Processor.h"
+
+namespace proc {
+
+
+#endif /* IE0_FF_H_ */

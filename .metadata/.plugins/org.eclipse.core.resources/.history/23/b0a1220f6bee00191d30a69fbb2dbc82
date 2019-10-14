@@ -1,0 +1,81 @@
+/*
+ * i80_9f.h
+ *
+ *  Created on: 14.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef I80_9F_H_
+#define I80_9F_H_
+
+
+#include <cstdint>
+#include "Processor.h"
+
+namespace proc {
+
+int execute80_9f(uint8_t opcode, Processor * proc) {
+	switch (opcode) {
+	case 0x80: //add a,b
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->b;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->b&0xf)&0x10==0x10);
+		return 1;
+	case 0x81: //add a,c
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->c;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->c&0xf)&0x10==0x10);
+		return 1;
+	case 0x82: //add a,d
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->d;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->d&0xf)&0x10==0x10);
+		return 1;
+	case 0x83: //add a,e
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->e;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->e&0xf)&0x10==0x10);
+		return 1;
+	case 0x84: //add a,h
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->h;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->h&0xf)&0x10==0x10);
+		return 1;
+	case 0x85: //add a,l
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->l;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->l&0xf)&0x10==0x10);
+		return 1;
+	case 0x86: //add a,(hl)
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		uint8_t b = proc->memory->readMemory(proc->getHL());
+		proc->a +=b;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ b&0xf)&0x10==0x10);
+		return 2;
+	case 0x87: //add a,a
+		proc->setFlag(SUB_FLAG,0);
+		uint8_t prev = proc->a;
+		proc->a +=proc->a;
+		proc->setFlag(CARRY_FLAG,prev>proc->a);
+		proc->setFlag(HALF_CARRY_FLAG,(prev&0xf+ proc->a&0xf)&0x10==0x10);
+		return 1;
+	}
+}
+}
+
+
+#endif /* I80_9F_H_ */

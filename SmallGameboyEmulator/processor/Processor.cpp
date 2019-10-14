@@ -6,6 +6,7 @@
  */
 
 #include <processor/Processor.h>
+#include "instructions/instructions.h"
 
 namespace proc {
 
@@ -26,7 +27,6 @@ Processor::Processor(MemoryManager * mem) {
 }
 
 Processor::~Processor() {
-	// TODO Auto-generated destructor stub
 }
 
 //virtual 16bit registers
@@ -108,9 +108,33 @@ uint16_t Processor::readMemory16(uint16_t addr) {
 	return ret;
 }
 
-void Processor::clock() {
-	if (--remainingInstructionTime<=0) {
+void Processor::triggerInterrupt(uint8_t interrupt) {
+	if (!interruptMasterEnable) return;
+	uint8_t interruptEnable = memory->readMemory(0xffff);
+	if (!(interruptEnable & (1<<interrupt))) return;
+	halted = false;
+	if (interrupt == INPUT) stopped = false;
+	push16(pc);
+	interruptMasterEnable = false;
+	pc = interruptTargets[interrupt];
+}
 
+void Processor::unknownOpcode() {
+	frozen = true;
+}
+
+void Processor::stop() {
+	stopped = true;
+}
+
+void Processor::halt() {
+	halted = true;
+}
+
+void Processor::clock() {
+	if (frozen || stopped || halted) return;
+	if (--remainingInstructionTime<=0) {
+		executeInstruction(getInstruction8(),this);
 	}
 }
 } /* namespace proc */

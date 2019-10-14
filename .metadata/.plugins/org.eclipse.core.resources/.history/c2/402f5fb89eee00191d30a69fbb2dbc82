@@ -1,0 +1,55 @@
+/*
+ * ic0_df.h
+ *
+ *  Created on: 14.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef IC0_DF_H_
+#define IC0_DF_H_
+
+
+#include <cstdint>
+#include "Processor.h"
+
+namespace proc {
+
+void _call(Processor * proc,uint16_t addr) {
+	proc->push16(proc->pc);
+	proc->pc = addr;
+}
+
+void _ret(Processor * proc) {
+	proc->pc = proc->pop16();
+}
+
+int executeC0_DF(uint8_t opcode, Processor * proc) {
+	switch(opcode) {
+	case 0xc0: //ret nz
+		if (!proc->getFlag(ZERO_FLAG)) {
+			_ret(proc);
+			return 5;
+		} else {
+			return 2;
+		}
+	case 0xc1: //pop bc
+		proc->setBC(proc->pop16());
+		return 3;
+	case 0xc2: //jp nz,a16
+		if (!proc->getFlag(ZERO_FLAG)) {
+			proc->pc = proc->getInstruction16();
+			return 4;
+		} else {
+			return 3;
+		}
+	case 0xc3: //jp a16
+		proc->pc = proc->getInstruction16();
+		return 4;
+	case 0xc4: //call nz,a16
+	}
+}
+
+}
+
+
+#endif /* IC0_DF_H_ */

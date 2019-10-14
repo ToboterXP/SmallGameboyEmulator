@@ -8,6 +8,7 @@
 #ifndef PROCESSOR_H_
 #define PROCESSOR_H_
 
+
 #include <cstdint>
 #include <memory/MemoryManager.h>
 
@@ -15,15 +16,34 @@ using namespace memory;
 
 namespace proc {
 
+
 //define cpu flags (f) register partition
 const uint8_t ZERO_FLAG = 		8;
 const uint8_t SUB_FLAG = 		7;
 const uint8_t HALF_CARRY_FLAG = 6;
 const uint8_t CARRY_FLAG = 		5;
 
+//define interrupt bits
+const uint8_t V_BLANK = 0;
+const uint8_t LCDC = 1;
+const uint8_t TIMER = 2;
+const uint8_t SERIAL = 3;
+const uint8_t INPUT = 4;
+
+const uint16_t interruptTargets[] = {
+		0x40,
+		0x48,
+		0x50,
+		0x58,
+		0x60
+};
+
 class Processor {
 protected:
 	int remainingInstructionTime;
+	bool frozen = false;
+	bool stopped = false;
+	bool halted = false;
 public:
 	MemoryManager * memory;
 	uint8_t a;
@@ -36,6 +56,7 @@ public:
 	uint8_t l;
 	uint16_t sp;
 	uint16_t pc;
+	bool interruptMasterEnable = true;
 
 	//virtual 16 bit register
 	uint16_t getAF();
@@ -65,12 +86,21 @@ public:
 	void writeMemory16(uint16_t addr,uint16_t val);
 	uint16_t readMemory16(uint16_t addr);
 
+	void unknownOpcode();
+	void stop();
+	void halt();
+
+	//interrupts
+	void triggerInterrupt(uint8_t interrupt);
+
 	void clock();
 
 
 	Processor(MemoryManager * mem);
 	virtual ~Processor();
 };
+
+int executeInstruction(uint8_t opcode,Processor * proc );
 
 } /* namespace proc */
 

@@ -1,0 +1,41 @@
+/*
+ * ie0_ff.h
+ *
+ *  Created on: 14.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef IE0_FF_H_
+#define IE0_FF_H_
+
+
+#include <cstdint>
+#include "Processor.h"
+
+namespace proc {
+
+
+
+int executeE0_FF(uint8_t opcode, Processor * proc) {
+	switch (opcode) {
+	case 0xe0: //ldh (a8),A
+		proc->memory->writeMemory(0xff00 + proc->getInstruction8(),proc->a);
+		return 3;
+	case 0xe1: //pop hl
+		proc->setHL(proc->pop16());
+		return 3;
+	case 0xe2: //ld (c),a
+		proc->memory->writeMemory(0xff00 + proc->c,proc->a);
+		return 2;
+	case 0xe3: //-
+		proc->unknownOpcode();
+		return 1;
+	case 0xe4: //-
+		proc->unknownOpcode();
+		return 1;
+	}
+}
+}
+
+
+#endif /* IE0_FF_H_ */
