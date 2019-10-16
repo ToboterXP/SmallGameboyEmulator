@@ -1,0 +1,31 @@
+/*
+ * icb00_cbff.cpp
+ *
+ *  Created on: 16.10.2019
+ *      Author: Tobias
+ */
+
+#include "icb00_cbff.h"
+
+namespace proc {
+
+
+uint8_t setBit(uint8_t val,uint8_t bit) {
+	return val | (1<<bit);
+}
+
+uint8_t resetBit(uint8_t val,uint8_t bit) {
+	return val & (~(1<<bit));
+}
+
+bool getBit(uint8_t val,uint8_t bit) {
+	return (val>>bit)&1;
+}
+
+int executeCB(uint8_t opcode, Processor * proc) {
+
+	return 2;
+}
+
+}
+

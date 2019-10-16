@@ -12,7 +12,6 @@
 #include "ic0_df.h"
 #include <cstdint>
 #include <processor/Processor.h>
-#include "icb00_cbff.h"
 
 namespace proc {
 
@@ -85,7 +84,8 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 			return 3;
 		}
 	case 0xcb: //prefix cb
-		return executeCB(proc->getInstruction8(),proc);
+		executeCB(proc->getInstruction8(),proc);
+		return 1;
 	case 0xcc: //call z,a16
 		if (proc->getFlag(ZERO_FLAG)) {
 			_call(proc,proc->getInstruction16());

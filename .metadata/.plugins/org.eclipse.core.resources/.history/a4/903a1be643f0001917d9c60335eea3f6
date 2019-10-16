@@ -10,7 +10,6 @@
 
 #include <cstdint>
 #include <processor/Processor.h>
-#include "icb00_cbff.h"
 
 namespace proc {
 int executeC0_DF(uint8_t opcode, Processor * proc);
