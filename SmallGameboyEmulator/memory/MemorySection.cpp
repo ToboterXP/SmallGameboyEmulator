@@ -10,14 +10,22 @@
 namespace memory {
 
 MemorySection::MemorySection(uint16_t start, uint32_t length) {
-	this->memoryLength = length;
-	this->memoryStart = start;
-	this->memoryEnd = start+length;
+	initializeSection(start,length);
 	this->memory = new uint8_t[length];
 }
 
 MemorySection::~MemorySection() {
+	deleteSection();
 	delete this->memory;
+}
+
+void MemorySection::initializeSection(uint16_t start, uint32_t length) {
+	this->memoryLength = length;
+	this->memoryStart = start;
+	this->memoryEnd = start+length;
+}
+
+void MemorySection::deleteSection() {
 	this->isValid = false;
 }
 

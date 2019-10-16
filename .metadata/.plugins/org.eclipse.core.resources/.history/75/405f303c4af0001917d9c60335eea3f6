@@ -1,0 +1,28 @@
+/*
+ * BasicROMSection.h
+ *
+ *  Created on: 16.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef BASICROMSECTION_H_
+#define BASICROMSECTION_H_
+
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+namespace memory{
+
+class BasicROMSection : MemorySection {
+protected:
+	uint8_t * rom;
+public:
+	BasicROMSection(string filename);
+	virtual ~BasicROMSection();
+};
+
+} /* namespace proc */
+
+#endif /* BASICROMSECTION_H_ */

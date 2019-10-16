@@ -1,0 +1,48 @@
+/*
+ * BasicROMSection.cpp
+ *
+ *  Created on: 16.10.2019
+ *      Author: Tobias
+ */
+
+#include <memory/BasicROMSection.h>
+
+namespace memory {
+
+BasicROMSection::BasicROMSection(string filename, uint16_t start, uint32_t length)  : MemorySection(start,length){
+	ifstream file;
+	file.open(filename,ios::in|ios::binary|ios::ate);
+	streampos size = file.tellg();
+	rom = new uint8_t[size];
+	file.seekg(0,ios::beg);
+	file.read((char *)rom,size);
+	file.close();
+
+	cartridgeType = rom[0x170];
+	switch (cartridgeType) {
+	case 1:
+	case 2:
+	case 3:
+		romType = MBC1;
+		break;
+	default:
+		romType = NONE;
+		break;
+	}
+}
+
+BasicROMSection::~BasicROMSection(){
+	delete this->rom;
+}
+
+bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
+	if (containsAddress(addr)) {
+		return true;
+	}
+	return false;
+}
+uint8_t BasicROMSection::readAddress(uint16_t addr) {
+
+}
+
+} /* namespace proc */

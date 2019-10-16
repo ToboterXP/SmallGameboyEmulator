@@ -41,9 +41,6 @@ const uint16_t interruptTargets[] = {
 class Processor {
 protected:
 	int remainingInstructionTime;
-	bool frozen = false;
-	bool stopped = false;
-	bool halted = false;
 public:
 	MemoryManager * memory;
 	uint8_t a;
@@ -57,6 +54,9 @@ public:
 	uint16_t sp;
 	uint16_t pc;
 	bool interruptMasterEnable = true;
+	bool frozen = false;
+	bool stopped = false;
+	bool halted = false;
 
 	//virtual 16 bit register
 	uint16_t getAF();
