@@ -1,0 +1,29 @@
+/*
+ * Joypad.h
+ *
+ *  Created on: 21.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef JOYPAD_H_
+#define JOYPAD_H_
+
+
+#include <memory/MemoryManager.h>
+#include <SDL2/sdl.h>
+
+using namespace memory;
+
+namespace misc {
+
+class Joypad {
+public:
+	uint8_t pressedKeys = 0;
+	void clock(MemoryManager * memory);
+	Joypad();
+	virtual ~Joypad();
+};
+
+} /* namespace ppu */
+
+#endif /* JOYPAD_H_ */

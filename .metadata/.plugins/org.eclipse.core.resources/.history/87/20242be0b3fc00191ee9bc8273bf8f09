@@ -1,0 +1,54 @@
+/*
+ * MemoryManager.cpp
+ *
+ *  Created on: 13.10.2019
+ *      Author: Tobias
+ */
+
+#include "MemoryManager.h"
+#include <cstdio>
+
+namespace memory {
+
+MemoryManager::MemoryManager() {
+	this-> sections = new std::list<MemorySection*>();
+}
+
+MemoryManager::~MemoryManager() {
+	delete this->sections;
+}
+
+void MemoryManager::addSection(MemorySection* sec) {
+	this->sections->push_back(sec);
+}
+
+uint8_t MemoryManager::readMemory(uint16_t addr) {
+	int i = 0;
+	for (std::list<MemorySection*>::iterator it = this->sections->begin();
+			it != this->sections->end(); ++it) {
+		i++;
+		if ((**it).containsAddress(addr)) return (**it).readAddress(addr);
+	}
+	return 0xFF;
+}
+
+void MemoryManager::writeMemory(uint16_t addr, uint8_t val) {
+	lastAccess = addr;
+	for (std::list<MemorySection*>::iterator it = this->sections->begin();
+				it != this->sections->end(); ++it) {
+			if ((**it).writeAddress(addr,val)) return;
+		}
+}
+
+void MemoryManager::printMemory(uint16_t start,uint16_t end) {
+	for (int i=start;i<=end;i+=16) {
+		printf("%.4x |",i);
+		for (int j=0;j<16;j++) {
+			printf(" %.2x",readMemory(i+j));
+		}
+		printf("\n");
+	}
+}
+
+
+} /* namespace memory */

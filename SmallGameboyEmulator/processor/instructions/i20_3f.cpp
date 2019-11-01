@@ -14,7 +14,7 @@
 namespace proc {
 
 int execute20_3f(uint8_t opcode, Processor * proc) {
-	int8_t jump;
+	int8_t jump,correction;
 	uint8_t prev;
 	uint16_t prev1;
 	switch (opcode) {
@@ -53,7 +53,18 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 		proc->h = proc->getInstruction8();
 		return 2;
 	case 0x27: //daa
-		if (proc->getFlag(SUB_FLAG)) {
+		correction =0;
+		if (proc->getFlag(HALF_CARRY_FLAG) || (!proc->getFlag(SUB_FLAG) && (proc->a & 0xf)>9)) {
+			correction |= 0x6;
+		}
+		if (proc->getFlag(CARRY_FLAG) || (!proc->getFlag(SUB_FLAG) && proc->a>0x99)) {
+			correction |= 0x60;
+			proc->setFlag(CARRY_FLAG,1);
+		}
+		proc->a += proc->getFlag(SUB_FLAG) ? -correction : correction;
+		proc->setFlag(ZERO_FLAG,proc->a==0);
+		proc->setFlag(SUB_FLAG,0);
+		/*if (proc->getFlag(SUB_FLAG)) {
 			uint8_t firstDigit = proc->a&0xf;
 			uint8_t secondDigit = ((proc->a)>>8) & 0xf;
 			if (firstDigit>9){
@@ -73,9 +84,8 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 			proc->a &= 0xf;
 			proc->a |= secondDigit<<4;
 		}
-		proc->setFlag(CARRY_FLAG,proc->a>0x99);
-		proc->setFlag(ZERO_FLAG,proc->a==0);
-		proc->setFlag(SUB_FLAG,0);
+		proc->setFlag(CARRY_FLAG,proc->a>0x99);*/
+
 		return 1;
 	case 0x28: //jr z,r8
 		jump = proc->getInstruction8();
@@ -189,7 +199,7 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 		return 1;
 	case 0x3d: //dec a
 		prev = proc->a;
-		proc->a++;
+		proc->a--;
 		proc->setFlag(ZERO_FLAG,proc->a==0);
 		proc->setFlag(SUB_FLAG,1);
 		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)-1)&0x10)==0x10);

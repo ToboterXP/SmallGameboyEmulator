@@ -1,0 +1,34 @@
+/*
+ * Joypad.cpp
+ *
+ *  Created on: 21.10.2019
+ *      Author: Tobias
+ */
+
+#include <misc/Joypad.h>
+
+namespace misc {
+
+Joypad::Joypad() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Joypad::~Joypad() {
+	// TODO Auto-generated destructor stub
+}
+
+void Joypad::clock(MemoryManager * memory) {
+	switch (memory->readMemory(0xff00)) {
+	case 0x10:
+		memory->writeMemory(0xff00,0x1f);
+		break;
+	case 0x20:
+		memory->writeMemory(0xff00,0x2f);
+		break
+	}
+
+}
+
+
+} /* namespace ppu */

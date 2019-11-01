@@ -1,9 +1,0 @@
-
-#include <cstdint>
-
-namespace proc {
-
-int executeInstruction(uint8_t opcode) {
-	return 0;
-}
-}

@@ -11,6 +11,7 @@
 
 #include "ie0_ff.h"
 #include <cstdint>
+#include <cstdio>
 #include <processor/Processor.h>
 
 namespace proc {
@@ -21,7 +22,7 @@ void _call(Processor * proc, uint16_t addr) {
 }
 
 int executeE0_FF(uint8_t opcode, Processor * proc) {
-	uint8_t prev,val,res;
+	uint8_t prev,val,res, addr;
 	int8_t b;
 	switch (opcode) {
 	case 0xe0: //ldh (a8),A
@@ -59,7 +60,7 @@ int executeE0_FF(uint8_t opcode, Processor * proc) {
 		proc->setFlag(ZERO_FLAG,0);
 		return 4;
 	case 0xe9: //jp (hl)
-		proc->pc = proc->readMemory16(proc->getHL());
+		proc->pc = proc->getHL();
 		return 1;
 	case 0xea: //ld (a16),a
 		proc->memory->writeMemory(proc->getInstruction16(),proc->a);
@@ -84,7 +85,10 @@ int executeE0_FF(uint8_t opcode, Processor * proc) {
 		_call(proc,0x28);
 		return 4;
 	case 0xf0: //ldh A,(a8)
-		proc->a = proc->memory->readMemory(0xff00+proc->getInstruction8());
+		addr = proc->getInstruction8();
+		res = proc->memory->readMemory(0xff00+addr);
+		//printf("f0 ff%x %x\n",addr,res);
+		proc->a = res;
 		return 3;
 	case 0xf1: //pop af
 		proc->setAF(proc->pop16());

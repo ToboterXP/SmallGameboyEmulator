@@ -6,6 +6,7 @@
  */
 
 #include "icb00_cbff.h"
+#include <cstdio>
 
 namespace proc {
 
@@ -53,6 +54,7 @@ uint8_t swap(uint8_t val, Processor * proc) {
 	uint8_t res = 0;
 	res |= (val&0xf)<<4;
 	res |= (val&0xf0)>>4;
+	proc->setFlag(CARRY_FLAG,0);
 	return res;
 }
 
@@ -81,7 +83,7 @@ uint8_t resetBit(uint8_t val,uint8_t bit) {
 }
 
 bool getBit(uint8_t val,uint8_t bit) {
-	return (val>>bit)&1;
+	return val&(1<<bit);
 }
 
 int executeCB(uint8_t opcode, Processor * proc) {
@@ -120,7 +122,8 @@ int executeCB(uint8_t opcode, Processor * proc) {
 	} else if (opcode >= 0x80) { //res *,b
 		result = resetBit(source,(opcode-0x80)/8);
 	} else if (opcode >=0x40) { //bit *,b
-		proc->setFlag(ZERO_FLAG,getBit(source,(opcode-0x40)/8));
+		proc->setFlag(ZERO_FLAG,!getBit(source,(opcode-0x40)/8));
+		//printf("bit %i, %i (zero %i)\n",(opcode-0x40)/8,source,proc->getFlag(ZERO_FLAG));
 		proc->setFlag(SUB_FLAG,0);
 		proc->setFlag(HALF_CARRY_FLAG,1);
 		return opcode%8==6 ? 4 :2;
@@ -128,6 +131,7 @@ int executeCB(uint8_t opcode, Processor * proc) {
 		result = operations[opcode/8](source,proc);
 		proc->setFlag(SUB_FLAG,0);
 		proc->setFlag(HALF_CARRY_FLAG,0);
+		proc->setFlag(ZERO_FLAG,result==0);
 	}
 
 	switch (opcode%8) {

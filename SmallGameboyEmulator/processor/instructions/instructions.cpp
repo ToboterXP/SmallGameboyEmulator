@@ -17,7 +17,6 @@
 
 
 namespace proc {
-
 //returns instruction delay
 int executeInstruction(uint8_t opcode,Processor * proc ) {
 	if (opcode < 0x20) return execute00_1f(opcode, proc);

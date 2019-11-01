@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;SmallGameboyEmulator/log.txt&apos; to &apos;zboyLog.txt&apos;" description="Rename resource &apos;log.txt&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="log.txt" name="zboyLog.txt" stamp="1572181383731" updateReferences="true"/>
+</session>

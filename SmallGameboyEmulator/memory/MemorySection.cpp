@@ -6,6 +6,7 @@
  */
 
 #include "MemorySection.h"
+#include <cstdio>
 
 namespace memory {
 

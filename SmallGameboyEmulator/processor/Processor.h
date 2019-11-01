@@ -10,6 +10,7 @@
 
 
 #include <cstdint>
+#include <cstdio>
 #include <memory/MemoryManager.h>
 
 using namespace memory;
@@ -18,10 +19,10 @@ namespace proc {
 
 
 //define cpu flags (f) register partition
-const uint8_t ZERO_FLAG = 		8;
-const uint8_t SUB_FLAG = 		7;
-const uint8_t HALF_CARRY_FLAG = 6;
-const uint8_t CARRY_FLAG = 		5;
+const uint8_t ZERO_FLAG = 		7;
+const uint8_t SUB_FLAG = 		6;
+const uint8_t HALF_CARRY_FLAG = 5;
+const uint8_t CARRY_FLAG = 		4;
 
 //define interrupt bits
 const uint8_t V_BLANK = 0;
@@ -39,9 +40,8 @@ const uint16_t interruptTargets[] = {
 };
 
 class Processor {
-protected:
-	int remainingInstructionTime;
 public:
+	int remainingInstructionTime=1;
 	MemoryManager * memory;
 	uint8_t a;
 	uint8_t f;
@@ -53,10 +53,16 @@ public:
 	uint8_t l;
 	uint16_t sp;
 	uint16_t pc;
+	uint16_t scheduledInterrupt = 0;
 	bool interruptMasterEnable = true;
 	bool frozen = false;
 	bool stopped = false;
 	bool halted = false;
+
+	bool isDebugging = false;
+	int debuggedInstructions = 0;
+	int ignores = 0;
+	uint16_t breakpoint = 0x0;
 
 	//virtual 16 bit register
 	uint16_t getAF();

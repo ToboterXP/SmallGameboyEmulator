@@ -20,7 +20,7 @@ int _add(proc::Processor * proc, uint8_t b) {
 	uint8_t prev = proc->a;
 	proc->a +=b;
 	proc->setFlag(CARRY_FLAG,prev>proc->a);
-	proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+	proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (b&0xf))&0x10)==0x10);
 	proc->setFlag(ZERO_FLAG,proc->a==0);
 	return 1;
 }
@@ -30,7 +30,7 @@ int _adc(Processor * proc, uint8_t b) {
 	uint8_t prev = proc->a;
 	proc->a +=b + proc->getFlag(CARRY_FLAG);
 	proc->setFlag(CARRY_FLAG,prev>proc->a);
-	proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+	proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (b&0xf))&0x10)==0x10);
 	proc->setFlag(ZERO_FLAG,proc->a==0);
 	return 1;
 }

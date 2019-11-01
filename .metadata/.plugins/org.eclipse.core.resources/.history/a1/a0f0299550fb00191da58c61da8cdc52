@@ -1,0 +1,106 @@
+/*
+ * PPU.cpp
+ *
+ *  Created on: 17.10.2019
+ *      Author: Tobias
+ */
+
+#include <video/PPU.h>
+#include <cstdio>
+
+namespace ppu {
+
+PPU::PPU(MemoryManager * memory,Processor * proc) {
+
+	this->memory = memory;
+	this->proc = proc;
+	delay = line_delay;
+
+	SDL_Init(SDL_INIT_VIDEO);
+	window = SDL_CreateWindow("Small Gameboy Emulator",
+			SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED,
+			320,
+			288,
+			0);
+
+	surface = SDL_GetWindowSurface(window);
+}
+
+PPU::~PPU() {
+	SDL_DestroyWindow(window);
+	SDL_FreeSurface(surface);
+}
+
+void PPU::drawPixel(uint8_t x, uint8_t y, uint8_t shade) {
+	shade &= 3;
+	uint8_t colors[] = {255,200,120,0} ;
+	uint8_t color = colors[shade];
+	SDL_Rect drawPos = {x*2,y*2,2,2};
+	SDL_FillRect(surface,&drawPos,SDL_MapRGB(surface->format,color,color,color));
+}
+
+void PPU::clock() {
+	delay -= 1;
+	if (delay<=0) {
+		printf("yDraw: %x\n",yDraw);
+		delay += line_delay;
+		xDraw =  0;
+		yDraw += 1;
+		if (yDraw==143) {
+			proc->triggerInterrupt(proc::V_BLANK);
+			SDL_UpdateWindowSurface(window);
+		}
+		if (yDraw>153) {
+			yDraw = 0;
+		}
+		memory->writeMemory(0xff44,yDraw);
+		if (yDraw==memory->readMemory(0xff45) && (memory->readMemory(0xff41)&(1<<6))!=0) {
+			proc->triggerInterrupt(proc::LCDC);
+		}
+	}
+
+	if (xDraw<=166) {
+
+		//handle lcdc register
+		uint8_t lcdc = memory->readMemory(0xff40);
+		if (lcdc&(1<<3))
+			bgTileMap = 0x9c00;
+		else
+			bgTileMap = 0x9800;
+
+		if (lcdc&(1<<4))
+			bgTileData = 0x8800;
+		else
+			bgTileData = 0x8000;
+
+		SDL_PumpEvents();
+
+		if (!(lcdc&(1<<7))) {
+			yDraw = 0;
+			return;
+		}
+
+		uint16_t currentTileX = xDraw/8;
+		uint16_t currentTileY = yDraw/8;
+		uint16_t tileNumAddr = bgTileMap+currentTileY*32+currentTileX;
+		uint16_t tileNumber = memory->readMemory(tileNumAddr);
+		uint16_t tileAddress = bgTileData+((uint16_t)tileNumber)*16;
+
+		if (xDraw%8==0 && yDraw%8==0) {
+			printf("x:%x y:%x n:%x addr:%x\n",currentTileX,currentTileY,tileNumber,tileNumAddr);
+		}
+
+		if (bgTileData == 0x8800) tileAddress = bgTileData+((int8_t)tileNumber)*16;
+
+		uint8_t currentTileL = memory->readMemory(tileAddress+(yDraw%8)*2);
+		uint8_t currentTileH = memory->readMemory(tileAddress+(yDraw%8)*2+1);
+		if (xDraw%8==7) currentTileH<<=1;
+		else currentTileH>>=(6-xDraw%8);
+		uint8_t currentPixel = ((currentTileL>>(7-xDraw%8))&1)|(currentTileH&2);
+		drawPixel(xDraw,yDraw,currentPixel);
+		xDraw++;
+	}
+}
+
+} /* namespace ppu */

@@ -6,7 +6,7 @@
  */
 
 #include <memory/BasicROMSection.h>
-#include <cstdlib>
+#include <cstdio>
 
 namespace memory {
 
@@ -61,7 +61,8 @@ BasicROMSection::~BasicROMSection(){
 }
 
 bool BasicROMSection::containsAddress(uint16_t addr) {
-	return addr<0x8000 || (addr>0xc000 && addr<=0xa000);
+	bool ret = addr<0x8000 || (addr>0xc000 && addr<=0xa000);
+	return ret;
 }
 
 bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
@@ -97,7 +98,10 @@ bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
 }
 uint8_t BasicROMSection::readAddress(uint16_t addr) {
 	if (addr>=0xa000) return ram[addr-0xa000+ramOffset];
-	if (addr<0x4000) return rom[addr];
+	if (addr<0x4000) {
+
+		return rom[addr];
+	}
 	else return rom[bankOffset+addr-0x4000];
 }
 

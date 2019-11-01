@@ -24,6 +24,7 @@ void _ret(Processor * proc) {
 
 int executeC0_DF(uint8_t opcode, Processor * proc) {
 	uint8_t prev,b;
+	uint16_t addr;
 	switch(opcode) {
 	case 0xc0: //ret nz
 		if (!proc->getFlag(ZERO_FLAG)) {
@@ -36,8 +37,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->setBC(proc->pop16());
 		return 3;
 	case 0xc2: //jp nz,a16
+		addr = proc->getInstruction16();
 		if (!proc->getFlag(ZERO_FLAG)) {
-			proc->pc = proc->getInstruction16();
+			proc->pc = addr;
 			return 4;
 		} else {
 			return 3;
@@ -46,8 +48,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->pc = proc->getInstruction16();
 		return 4;
 	case 0xc4: //call nz,a16
+		addr = proc->getInstruction16();
 		if (!proc->getFlag(ZERO_FLAG)) {
-			_call(proc,proc->getInstruction16());
+			_call(proc,addr);
 			return 6;
 		} else {
 			return 3;
@@ -61,7 +64,7 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		b = proc->getInstruction8();
 		proc->a += b;
 		proc->setFlag(CARRY_FLAG,prev>proc->a);
-		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (b&0xf))&0x10)==0x10);
 		proc->setFlag(ZERO_FLAG,proc->a==0);
 		return 2;
 	case 0xc7: //rst 00h
@@ -78,8 +81,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		_ret(proc);
 		return 4;
 	case 0xca: //jp z,a16
+		addr = proc->getInstruction16();
 		if (proc->getFlag(ZERO_FLAG)) {
-			proc->pc = proc->getInstruction16();
+			proc->pc = addr;
 			return 4;
 		} else {
 			return 3;
@@ -87,8 +91,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 	case 0xcb: //prefix cb
 		return executeCB(proc->getInstruction8(),proc);
 	case 0xcc: //call z,a16
+		addr = proc->getInstruction16();
 		if (proc->getFlag(ZERO_FLAG)) {
-			_call(proc,proc->getInstruction16());
+			_call(proc,addr);
 			return 6;
 		} else {
 			return 3;
@@ -102,7 +107,7 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		b = proc->getInstruction8() + proc->getFlag(CARRY_FLAG);
 		proc->a += b;
 		proc->setFlag(CARRY_FLAG,prev>proc->a);
-		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (proc->b&0xf))&0x10)==0x10);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)+ (b&0xf))&0x10)==0x10);
 		proc->setFlag(ZERO_FLAG,proc->a==0);
 		return 2;
 	case 0xcf: //rst 08h
@@ -119,8 +124,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->setDE(proc->pop16());
 		return 3;
 	case 0xd2: //jp nc,a16
+		addr = proc->getInstruction16();
 		if (!proc->getFlag(CARRY_FLAG)) {
-			proc->pc = proc->getInstruction16();
+			proc->pc = addr;
 			return 4;
 		} else {
 			return 3;
@@ -129,8 +135,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->unknownOpcode();
 		return 4;
 	case 0xd4: //call nc,a16
+		addr = proc->getInstruction16();
 		if (!proc->getFlag(CARRY_FLAG)) {
-			_call(proc,proc->getInstruction16());
+			_call(proc,addr);
 			return 6;
 		} else {
 			return 3;
@@ -162,8 +169,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->interruptMasterEnable = true;
 		return 4;
 	case 0xda: //jp c,a16
+		addr = proc->getInstruction16();
 		if (proc->getFlag(CARRY_FLAG)) {
-			proc->pc = proc->getInstruction16();
+			proc->pc = addr;
 			return 4;
 		} else {
 			return 3;
@@ -172,8 +180,9 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 		proc->unknownOpcode();
 		return 1;
 	case 0xdc: //call c,a16
+		addr = proc->getInstruction16();
 		if (proc->getFlag(CARRY_FLAG)) {
-			_call(proc,proc->getInstruction16());
+			_call(proc,addr);
 			return 6;
 		} else {
 			return 3;

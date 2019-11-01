@@ -15,7 +15,6 @@ namespace memory {
 
 class MemorySection {
 protected:
-	uint8_t * memory;
 	uint32_t memoryLength;
 	uint16_t memoryStart;
 	uint32_t memoryEnd;
@@ -23,6 +22,7 @@ protected:
 	void initializeSection(uint16_t start, uint32_t length);
 	void deleteSection();
 public:
+	uint8_t * memory;
 	bool isValid = true;
 	MemorySection(uint16_t start, uint32_t length);
 	virtual ~MemorySection();

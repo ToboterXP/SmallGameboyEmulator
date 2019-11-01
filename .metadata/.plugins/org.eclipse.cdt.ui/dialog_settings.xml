@@ -10,9 +10,11 @@
 		<item value="true" key="namespaceSelected"/>
 		<item value="false" key="stubInline0"/>
 		<item value="false" key="stubInline1"/>
-		<item value="proc" key="namespace"/>
+		<item value="ppu" key="namespace"/>
 		<item value="false" key="testFileSelected"/>
 		<item value="true" key="stubSelected0"/>
+	</section>
+	<section name="PDOMSearchPage">
 	</section>
 	<section name="completion_proposal_size">
 	</section>

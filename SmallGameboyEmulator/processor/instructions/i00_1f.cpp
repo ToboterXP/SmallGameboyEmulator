@@ -89,7 +89,7 @@ int execute00_1f(uint8_t opcode, Processor * proc) {
 		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)-1)&0x10)==0x10);
 		return 1;
 	case 0x0e: // ld c,d8
-		proc->c = proc->memory->readMemory(proc->getInstruction8());
+		proc->c = proc->getInstruction8();
 		return 2;
 	case 0x0f: //rrca
 		bit0 = proc->a & 1;
@@ -149,7 +149,7 @@ int execute00_1f(uint8_t opcode, Processor * proc) {
 		prev1 = proc->getHL();
 		proc->setHL(proc->getHL() + proc->getDE());
 		proc->setFlag(SUB_FLAG,0);
-		proc->setFlag(HALF_CARRY_FLAG,(((prev1&0xf)+(proc->getDE()&0xf))&0x10)==0x10);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev1&0xfff)+(proc->getDE()&0xfff))&0x1000)==0x1000);
 		proc->setFlag(CARRY_FLAG,prev1 > proc->getHL());
 		return 2;
 	case 0x1a: //ld a,(de)
@@ -167,7 +167,7 @@ int execute00_1f(uint8_t opcode, Processor * proc) {
 		return 1;
 	case 0x1d: //dec e
 		prev = proc->e;
-		proc->e++;
+		proc->e--;
 		proc->setFlag(ZERO_FLAG,proc->e==0);
 		proc->setFlag(SUB_FLAG,1);
 		proc->setFlag(HALF_CARRY_FLAG,(((prev&0xf)-1)&0x10)==0x10);
