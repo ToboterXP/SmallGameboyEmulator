@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <list>
 #include <memory/MemoryManager.h>
 
 using namespace memory;
@@ -39,6 +40,11 @@ const uint16_t interruptTargets[] = {
 		0x60
 };
 
+typedef struct Instruction {
+	uint16_t addr;
+	uint8_t opcode[5];
+} Instruction;
+
 class Processor {
 public:
 	int remainingInstructionTime=1;
@@ -63,6 +69,7 @@ public:
 	int debuggedInstructions = 0;
 	int ignores = 0;
 	uint16_t breakpoint = 0x0;
+	std::list<Instruction> instructionHistory;
 
 	//virtual 16 bit register
 	uint16_t getAF();

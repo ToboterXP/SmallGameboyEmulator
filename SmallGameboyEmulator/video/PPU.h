@@ -25,7 +25,7 @@ struct PPUSprite {
 };
 
 class PPU {
-protected:
+public:
 	uint16_t scheduledSprites[10];
 	uint8_t currentSchedSprite = 0;
 	int i=0;
@@ -39,7 +39,9 @@ protected:
 	Processor * proc;
 	SDL_Window* window;
 	SDL_Surface * surface;
-public:
+
+
+	bool vBlank = false;
 	uint8_t yDraw = 0;
 	PPU(MemoryManager * memory,Processor * proc);
 	virtual ~PPU();

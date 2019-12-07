@@ -1,0 +1,41 @@
+/*
+ * APU.h
+ *
+ *  Created on: 01.12.2019
+ *      Author: Tobias
+ */
+
+#ifndef APU_H_
+#define APU_H_
+
+#include <cstdint>
+#include <SDL2/sdl.h>
+#include "AudioInterface.h"
+#include <memory/MemoryManager.h>
+
+using namespace memory;
+
+namespace audio {
+
+const uint8_t DUTY_CYCLES[] = {1,2,4,6};
+const uint16_t TEST_SCALE[] = {262,294,330,349,392,440,494,523};
+class APU {
+public:
+	AudioInterface * audio;
+	MemoryManager * memory;
+
+	bool c1_enabled = false;
+	int16_t c1_freq = 0;
+	uint32_t c1_remaining = 0;
+
+	int test = 0;
+
+
+	APU(MemoryManager * memory);
+	virtual ~APU();
+	void clock();
+};
+
+} /* namespace audio */
+
+#endif /* APU_H_ */

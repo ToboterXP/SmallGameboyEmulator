@@ -9,6 +9,7 @@
 #define MEMORYMANAGER_H_
 
 #include "MemorySection.h"
+#include "BasicROMSection.h"
 #include <list>
 #include <cstdint>
 
@@ -17,7 +18,7 @@ namespace memory {
 class MemoryManager {
 public:
 	uint8_t * ram;
-	MemorySection * romSection;
+	BasicROMSection * romSection;
 	MemorySection * ramSection;
 	uint16_t lastAccess = 0;
 	MemoryManager();

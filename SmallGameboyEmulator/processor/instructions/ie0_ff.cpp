@@ -87,7 +87,6 @@ int executeE0_FF(uint8_t opcode, Processor * proc) {
 	case 0xf0: //ldh A,(a8)
 		addr = proc->getInstruction8();
 		res = proc->memory->readMemory(0xff00+addr);
-		//printf("f0 ff%x %x\n",addr,res);
 		proc->a = res;
 		return 3;
 	case 0xf1: //pop af

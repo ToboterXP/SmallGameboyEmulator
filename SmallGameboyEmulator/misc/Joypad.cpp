@@ -34,15 +34,16 @@ void Joypad::clock(MemoryManager * memory) {
 					break;
 				}
 			}
+			if (event.key.keysym.scancode==SDL_SCANCODE_P) speedUp = true;
 			break;
 		case SDL_KEYUP:
-			printf("%i\n",event.key.keysym.scancode);
 			for (int i=0;i<8;i++) {
 				if (keyMap[i] == event.key.keysym.scancode) {
 					pressedKeys &= ~(1<<i);
 					break;
 				}
 			}
+			if (event.key.keysym.scancode==SDL_SCANCODE_P) speedUp = false;
 			break;
 		}
 	}

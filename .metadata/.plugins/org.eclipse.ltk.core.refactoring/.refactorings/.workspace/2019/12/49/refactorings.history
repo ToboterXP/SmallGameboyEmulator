@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;SmallGameboyEmulator/pokered.srm&apos;" deleteContents="false" description="Delete resource &apos;SmallGameboyEmulator/pokered.srm&apos;" element1="/SmallGameboyEmulator/pokered.srm" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1575312151646"/>
+</session>

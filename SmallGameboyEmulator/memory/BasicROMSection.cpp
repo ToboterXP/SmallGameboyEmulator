@@ -11,11 +11,15 @@
 namespace memory {
 
 BasicROMSection::BasicROMSection(string filename)  : MemorySection(0,2){
+	romFilename = filename;
 	ifstream file;
 	file.open(filename,ios::in|ios::binary|ios::ate);
+	if (!file.is_open()) {
+		cout << "Error: File not found" << endl;
+		exit(1);
+	}
 	file.seekg(0,file.end);
 	streampos size = file.tellg();
-	printf("%s %x %i\n",filename.c_str(),(unsigned int)size,file.fail());
 	rom = new uint8_t[size];
 	file.seekg(0,ios::beg);
 	file.read((char *)rom,size);
@@ -27,6 +31,10 @@ BasicROMSection::BasicROMSection(string filename)  : MemorySection(0,2){
 	case 2:
 	case 3:
 		romType = MBC1;
+		break;
+	case 0x12:
+	case 0x13:
+		romType = MBC3;
 		break;
 	default:
 		romType = NONE;
@@ -40,19 +48,37 @@ BasicROMSection::BasicROMSection(string filename)  : MemorySection(0,2){
 	switch (rom[0x149]) {
 	case 0:
 		ram = new uint8_t[1];
+		ramSizeID = 0;
+		ramSize = 0;
 		break;
 	case 1:
 		ram = new uint8_t[0x800];
+		ramSizeID = 1;
+		ramSize = 0x800;
 		break;
 	case 2:
 		ram = new uint8_t[0x2000];
+		ramSizeID = 2;
+		ramSize = 0x2000;
 		break;
 	case 3:
 		ram = new uint8_t[0x8000];
+		ramSizeID = 3;
+		ramSize = 0x8000;
 		break;
 	case 4:
 		ram = new uint8_t[0x20000];
+		ramSizeID = 4;
+		ramSize = 0x20000;
+		break;
 	}
+
+	file.open(romFilename.substr(0,romFilename.find_last_of('.'))+".srm",ios::in|ios::binary);
+	if (file.is_open()) {
+		file.read((char *)ram,ramSize);
+	}
+
+	file.close();
 }
 
 BasicROMSection::~BasicROMSection(){
@@ -61,13 +87,16 @@ BasicROMSection::~BasicROMSection(){
 }
 
 bool BasicROMSection::containsAddress(uint16_t addr) {
-	bool ret = addr<0x8000 || (addr>0xc000 && addr<=0xa000);
-	return ret;
+	return addr<0x8000 || (addr<0xc000 && addr>=0xa000);
 }
 
 bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
+	if (addr==0xb523) cout << (int)value<<endl;
 	if (containsAddress(addr)) {
-		if (addr>0x8000) memory[addr-0xa000] = value;
+		if (addr>0x8000 && !sramLock) {
+			//cout << (int)addr << " " << (int)(addr-0xa000+ramOffset) << " " << (int)value << endl;
+			ram[addr-0xa000+ramOffset] = value;
+		}
 
 		switch(romType) {
 		case MBC1:
@@ -75,11 +104,13 @@ bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
 				if (value==0) value = 1;
 				bankOffset &= 0x1fff;
 				bankOffset |= ((uint64_t)value&0x1f)<<14;
+				romBank = (uint64_t)value&0x1f;
 			}
 			else if (addr<0x6000) {
 				if (romMode==1) {
 					bankOffset &= 0x7ffff;
 					bankOffset |= ((uint64_t)value&3)<<20;
+					romBank = ((uint64_t)value&3)<<6;
 				} else {
 					ramOffset &= 0x1fff;
 					ramOffset |= ((uint64_t)value&3)<<13;
@@ -87,6 +118,26 @@ bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
 			}
 			else if(addr<0x8000) {
 				romMode = value&1;
+			}
+			break;
+
+		case MBC3:
+			if (addr<0x2000) {
+				if (value==0x0a) sramLock = false;
+				else {
+					sramLock = true;
+					saveSRAM();
+				}
+			}
+			if (addr>=0x2000 && addr<0x4000) {
+				if (value==0) value = 1;
+				changed = true;
+				bankOffset = (value&0x7f)<<14;
+				romBank = value;
+			}
+			else if (addr<0x6000) {
+				ramOffset &= 0x1fff;
+				ramOffset |= ((uint64_t)value&3)<<13;
 			}
 			break;
 		default:
@@ -99,10 +150,18 @@ bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
 uint8_t BasicROMSection::readAddress(uint16_t addr) {
 	if (addr>=0xa000) return ram[addr-0xa000+ramOffset];
 	if (addr<0x4000) {
-
 		return rom[addr];
 	}
 	else return rom[bankOffset+addr-0x4000];
+}
+
+void BasicROMSection::saveSRAM() {
+	cout << "Saving..." << endl;
+	ofstream myfile;
+	myfile.open (romFilename.substr(0,romFilename.find_last_of('.'))+".srm");
+	myfile << string((char*)ram,(size_t)ramSize);
+
+	myfile.close();
 }
 
 } /* namespace proc */

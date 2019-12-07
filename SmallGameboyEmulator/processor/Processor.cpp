@@ -25,6 +25,7 @@ Processor::Processor(MemoryManager * mem) {
 	pc = 0x100;
 
 	remainingInstructionTime = 1;
+
 }
 
 Processor::~Processor() {
@@ -145,6 +146,12 @@ void Processor::clock() {
 			isDebugging = false;
 		}
 		uint8_t opcode = getInstruction8();
+		Instruction ins;
+		for (int i=pc-1;i<pc+4;i++) ins.opcode[i-pc+1] = memory->readMemory(i);
+
+		ins.addr = pc-1;
+		instructionHistory.push_back(ins);
+		if (instructionHistory.size()>100) instructionHistory.pop_front();
 		if (isDebugging) {
 			printf("%x:%x - \taf=%.4x \tbc=%.4x \tde=%.4x \thl=%.4x \tsp=%.4x\n",pc-1,opcode,getAF(),getBC(),getDE(),getHL(),sp);
 			debuggedInstructions++;

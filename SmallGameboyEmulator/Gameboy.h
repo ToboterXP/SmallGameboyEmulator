@@ -14,6 +14,8 @@
 #include <video/PPU.h>
 #include <misc/Joypad.h>
 #include <misc/OAMDMA.h>
+#include <misc/Timer.h>
+#include <audio/APU.h>
 #include <iostream>
 #include <cstdint>
 #include <string>
@@ -25,6 +27,7 @@
 using namespace std::chrono;
 
 using namespace memory;
+using namespace audio;
 using namespace proc;
 using namespace ppu;
 using namespace std;
@@ -34,13 +37,14 @@ using namespace misc;
 class Gameboy {
 protected:
 	int procCD = 3;
-	FILE * log;
 public:
 	MemoryManager * memory;
 	Processor * processor;
 	PPU * ppu;
 	Joypad * joypad;
 	OAMDMA * oam;
+	Timer * timer;
+	APU * apu;
 	Gameboy();
 	virtual ~Gameboy();
 
