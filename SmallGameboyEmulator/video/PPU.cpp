@@ -20,8 +20,8 @@ PPU::PPU(MemoryManager * memory,Processor * proc) {
 	window = SDL_CreateWindow("Small Gameboy Emulator",
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
-			320,
-			288,
+			160*screenSize,
+			144*screenSize,
 			0);
 
 	surface = SDL_GetWindowSurface(window);
@@ -36,7 +36,7 @@ void PPU::drawPixel(uint8_t x, uint8_t y, uint8_t shade) {
 	shade &= 3;
 	uint8_t colors[] = {255,200,120,0} ;
 	uint8_t color = colors[shade];
-	SDL_Rect drawPos = {x*2,y*2,2,2};
+	SDL_Rect drawPos = {x*screenSize,y*screenSize,screenSize,screenSize};
 	SDL_FillRect(surface,&drawPos,SDL_MapRGB(surface->format,color,color,color));
 }
 
@@ -122,6 +122,7 @@ void PPU::clock() {
 				} else {
 					currentX = spriteX;
 				}
+				uint8_t newSpritePixel = 0;
 				if ((spriteY-8)>yDraw) {
 					uint8_t x = (xDraw-(spriteX-8))%8;
 					if (flags&(1<<5)) x= 7-x;
@@ -132,7 +133,7 @@ void PPU::clock() {
 					uint8_t currentTileH = memory->ram[tileAddress+y*2+1];
 					if (x==7) currentTileH<<=1;
 					else currentTileH>>=(6-x);
-					spritePixel = ((currentTileL>>(7-x))&1)|(currentTileH&2);
+					newSpritePixel = ((currentTileL>>(7-x))&1)|(currentTileH&2);
 				} else {
 					tileNr++;
 					uint8_t x = (xDraw-(spriteX-8))%8;
@@ -144,9 +145,12 @@ void PPU::clock() {
 					uint8_t currentTileH = memory->ram[tileAddress+y*2+1];
 					if (x==7) currentTileH<<=1;
 					else currentTileH>>=(6-x);
-					spritePixel = ((currentTileL>>(7-x))&1)|(currentTileH&2);
+					newSpritePixel = ((currentTileL>>(7-x))&1)|(currentTileH&2);
 				}
 				spritePalette = memory->ram[flags&(1<<4) ? 0xff49: 0xff48];
+				if (newSpritePixel != 0) {
+					spritePixel = newSpritePixel;
+				}
 			}
 		}
 

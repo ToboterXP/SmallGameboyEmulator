@@ -68,7 +68,9 @@ public:
 	bool isDebugging = false;
 	int debuggedInstructions = 0;
 	int ignores = 0;
+	//uint16_t breakpoint = 0x6015;
 	uint16_t breakpoint = 0x0;
+	uint8_t breakRomBank = 0x0f;
 	std::list<Instruction> instructionHistory;
 
 	//virtual 16 bit register

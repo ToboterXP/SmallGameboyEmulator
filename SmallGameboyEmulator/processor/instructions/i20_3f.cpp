@@ -19,7 +19,7 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 	uint16_t prev1;
 	switch (opcode) {
 	case 0x20: //jr nz,r8
-		jump = proc->getInstruction8();
+		jump = (int8_t)proc->getInstruction8();
 		if (!(proc->getFlag(ZERO_FLAG))) {
 			proc->pc += jump;
 			return 3;
@@ -64,27 +64,6 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 		proc->a += proc->getFlag(SUB_FLAG) ? -correction : correction;
 		proc->setFlag(ZERO_FLAG,proc->a==0);
 		proc->setFlag(SUB_FLAG,0);
-		/*if (proc->getFlag(SUB_FLAG)) {
-			uint8_t firstDigit = proc->a&0xf;
-			uint8_t secondDigit = ((proc->a)>>8) & 0xf;
-			if (firstDigit>9){
-				firstDigit += 6;
-				secondDigit += 1;
-			}
-			if (secondDigit>9) secondDigit += 6;
-			proc->a = firstDigit;
-			proc->a &= 0xf;
-			proc->a |= secondDigit<<4;
-		} else {
-			uint8_t firstDigit = proc->a&0xf;
-			uint8_t secondDigit = ((proc->a)>>8) & 0xf;
-			if (firstDigit>9 || proc->getFlag(HALF_CARRY_FLAG)) firstDigit -= 6;
-			if (secondDigit>9 || proc->getFlag(CARRY_FLAG)) secondDigit -= 6;
-			proc->a = firstDigit;
-			proc->a &= 0xf;
-			proc->a |= secondDigit<<4;
-		}
-		proc->setFlag(CARRY_FLAG,proc->a>0x99);*/
 
 		return 1;
 	case 0x28: //jr z,r8

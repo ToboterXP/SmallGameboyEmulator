@@ -40,6 +40,8 @@ public:
 	SDL_Window* window;
 	SDL_Surface * surface;
 
+	int screenSize = 4;
+
 
 	bool vBlank = false;
 	uint8_t yDraw = 0;

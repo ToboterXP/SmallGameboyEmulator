@@ -91,10 +91,8 @@ bool BasicROMSection::containsAddress(uint16_t addr) {
 }
 
 bool BasicROMSection::writeAddress(uint16_t addr, uint8_t value) {
-	if (addr==0xb523) cout << (int)value<<endl;
 	if (containsAddress(addr)) {
 		if (addr>0x8000 && !sramLock) {
-			//cout << (int)addr << " " << (int)(addr-0xa000+ramOffset) << " " << (int)value << endl;
 			ram[addr-0xa000+ramOffset] = value;
 		}
 
@@ -156,10 +154,9 @@ uint8_t BasicROMSection::readAddress(uint16_t addr) {
 }
 
 void BasicROMSection::saveSRAM() {
-	cout << "Saving..." << endl;
 	ofstream myfile;
-	myfile.open (romFilename.substr(0,romFilename.find_last_of('.'))+".srm");
-	myfile << string((char*)ram,(size_t)ramSize);
+	myfile.open (romFilename.substr(0,romFilename.find_last_of('.'))+".srm", ios::binary|ios::out);
+	myfile.write((char*)ram,(size_t)ramSize);
 
 	myfile.close();
 }

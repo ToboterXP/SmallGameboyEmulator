@@ -63,6 +63,7 @@ int execute40_5f(uint8_t opcode, Processor * proc) {
 		proc->c = proc->a;
 		return 1;
 	case 0x50: // ld d,b
+		proc->d = proc->b;
 		return 1;
 	case 0x51: // ld d,c
 		proc->d = proc->c;
@@ -104,7 +105,7 @@ int execute40_5f(uint8_t opcode, Processor * proc) {
 	case 0x5e: //ld e,(hl)
 		proc->e = proc->memory->readMemory(proc->getHL());
 		return 2;
-	case 0x5f: //ld c,a
+	case 0x5f: //ld e,a
 		proc->e = proc->a;
 		return 1;
 	}

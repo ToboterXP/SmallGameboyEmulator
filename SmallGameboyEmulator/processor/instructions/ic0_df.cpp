@@ -19,7 +19,10 @@ namespace proc {
 void _call(Processor * proc, uint16_t addr);
 
 void _ret(Processor * proc) {
+	//uint16_t from = proc->pc;
 	proc->pc = proc->pop16();
+	/*printf("ret %.4x from %.4x sp=%.4x",proc->pc,from,proc->sp);
+	cout<<endl;*/
 }
 
 int executeC0_DF(uint8_t opcode, Processor * proc) {
@@ -99,7 +102,10 @@ int executeC0_DF(uint8_t opcode, Processor * proc) {
 			return 3;
 		}
 	case 0xcd: //call a16
-		_call(proc,proc->getInstruction16());
+		addr = proc->getInstruction16();
+		/*printf("call %.4x from %.4x sp=%.4x",addr,proc->pc,proc->sp);
+		cout << endl;*/
+		_call(proc,addr);
 		return 6;
 	case 0xce: //adc a,d8
 		proc->setFlag(SUB_FLAG,0);

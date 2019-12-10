@@ -9,6 +9,7 @@
 #define BASICROMSECTION_H_
 
 #include "MemorySection.h"
+#include <SDL2/sdl.h>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>

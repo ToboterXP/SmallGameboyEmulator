@@ -96,7 +96,7 @@ int execute00_1f(uint8_t opcode, Processor * proc) {
 		proc->setFlag(CARRY_FLAG, bit0);
 		proc->a >>= 1;
 		proc->a &= ~(1<<7);
-		proc->a |= bit0;
+		proc->a |= bit0<<7;
 		proc->setFlag(ZERO_FLAG,0);
 		proc->setFlag(SUB_FLAG,0);
 		proc->setFlag(HALF_CARRY_FLAG,0);
