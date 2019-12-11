@@ -26,7 +26,6 @@ public:
 
 	uint8_t readMemory(uint16_t addr);
 	void writeMemory(uint16_t addr, uint8_t val);
-	void printMemory(uint16_t start,uint16_t end);
 };
 
 } /* namespace memory */

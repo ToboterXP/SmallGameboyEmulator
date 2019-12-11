@@ -29,6 +29,7 @@ const SDL_Scancode keyMap[] = {
 
 class Joypad {
 public:
+	bool exit = false;
 	bool speedUp = false;
 	uint8_t pressedKeys = 0;
 	void clock(MemoryManager * memory);

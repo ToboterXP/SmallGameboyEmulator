@@ -140,27 +140,7 @@ void Processor::clock() {
 			pc = scheduledInterrupt;
 			scheduledInterrupt = 0;
 		}
-		if (pc==breakpoint && memory->romSection->romBank==breakRomBank) isDebugging = true;
-		if (isDebugging && ignores>0) {
-			ignores--;
-			isDebugging = false;
-		}
-		uint8_t opcode = getInstruction8();
-		Instruction ins;
-		for (int i=pc-1;i<pc+4;i++) ins.opcode[i-pc+1] = memory->readMemory(i);
-
-		ins.addr = pc-1;
-		instructionHistory.push_back(ins);
-		if (instructionHistory.size()>100) instructionHistory.pop_front();
-		if (isDebugging) {
-			printf("%x:%x - \taf=%.4x \tbc=%.4x \tde=%.4x \thl=%.4x \tsp=%.4x \tstack0=%.4x",pc-1,opcode,getAF(),getBC(),getDE(),getHL(),sp,readMemory16(sp));
-			cout << endl;
-			debuggedInstructions++;
-			if (debuggedInstructions==1000) exit(0);
-		}
-		remainingInstructionTime = executeInstruction(opcode,this);
-
-
+		remainingInstructionTime = executeInstruction(getInstruction8(),this);
 	}
 }
 } /* namespace proc */

@@ -81,10 +81,10 @@ int execute60_7f(uint8_t opcode, Processor * proc) {
 	case 0x75: //ld (hl),l
 		proc->memory->writeMemory(proc->getHL(), proc->l );
 		return 2;
-	case 0x76: //ld d,(hl)
+	case 0x76: //halt
 		proc->halt();
 		return 1;
-	case 0x77: //ld d,a
+	case 0x77: //ld (hl),a
 		proc->memory->writeMemory(proc->getHL(), proc->a );
 		return 2;
 	case 0x78: //ld a,b

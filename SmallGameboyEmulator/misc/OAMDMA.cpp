@@ -25,7 +25,6 @@ void OAMDMA::clock() {
 }
 
 OAMDMA::~OAMDMA() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace ppu */

@@ -10,14 +10,15 @@
 
 namespace ppu {
 
-PPU::PPU(MemoryManager * memory,Processor * proc) {
+PPU::PPU(MemoryManager * memory,Processor * proc, int screenSize) {
 
+	this->screenSize = screenSize;
 	this->memory = memory;
 	this->proc = proc;
 	delay = line_delay;
 
 	SDL_Init(SDL_INIT_VIDEO);
-	window = SDL_CreateWindow("Small Gameboy Emulator",
+	window = SDL_CreateWindow("Small Gameboy Emulator by Tobias Oehme",
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
 			160*screenSize,
@@ -34,7 +35,7 @@ PPU::~PPU() {
 
 void PPU::drawPixel(uint8_t x, uint8_t y, uint8_t shade) {
 	shade &= 3;
-	uint8_t colors[] = {255,200,120,0} ;
+	uint8_t colors[] = {255,190,120,0} ;
 	uint8_t color = colors[shade];
 	SDL_Rect drawPos = {x*screenSize,y*screenSize,screenSize,screenSize};
 	SDL_FillRect(surface,&drawPos,SDL_MapRGB(surface->format,color,color,color));

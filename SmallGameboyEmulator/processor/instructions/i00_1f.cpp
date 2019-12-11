@@ -27,7 +27,6 @@ int execute00_1f(uint8_t opcode, Processor * proc) {
 		proc->memory->writeMemory(proc->getBC(), proc->a);
 		return 2;
 	case 0x03: //inc bc
-
 		proc->setBC(proc->getBC()+1);
 		return 2;
 	case 0x04: //inc b

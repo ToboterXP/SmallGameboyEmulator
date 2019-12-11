@@ -1,0 +1,56 @@
+/*
+ * PPU.h
+ *
+ *  Created on: 17.10.2019
+ *      Author: Tobias
+ */
+
+#ifndef PPU_H_
+#define PPU_H_
+
+#include <memory/MemoryManager.h>
+#include <processor/Processor.h>
+#include <SDL2/sdl.h>
+
+using namespace proc;
+using namespace memory;
+
+namespace ppu {
+
+struct PPUSprite {
+	uint8_t x;
+	uint8_t y;
+	uint8_t tile;
+	uint8_t flags;
+};
+
+class PPU {
+public:
+	uint16_t scheduledSprites[10];
+	uint8_t currentSchedSprite = 0;
+	int i=0;
+	uint16_t bgTileData = 0;
+	uint16_t bgTileMap = 0;
+	uint8_t xDraw = 0;
+	float delay = 0;
+	const float line_delay = 456;
+	bool disableSpriteLine = false;
+	MemoryManager * memory;
+	Processor * proc;
+	SDL_Window* window;
+	SDL_Surface * surface;
+
+	int screenSize = 4;
+
+
+	bool vBlank = false;
+	uint8_t yDraw = 0;
+	PPU(MemoryManager * memory,Processor * proc);
+	virtual ~PPU();
+	void clock();
+	void drawPixel(uint8_t x,uint8_t y, uint8_t shade);
+};
+
+} /* namespace ppu */
+
+#endif /* PPU_H_ */

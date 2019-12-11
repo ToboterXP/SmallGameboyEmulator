@@ -12,11 +12,10 @@
 
 using namespace std::chrono;
 
-Gameboy::Gameboy() {
-	//log = fopen("log.txt", "w");
+Gameboy::Gameboy(string romFile,int screenSize) {
 	this->memory = new MemoryManager();
-	//catch-all ram
-	this->memory->romSection = new BasicROMSection("./pokered.gb");
+
+	this->memory->romSection = new BasicROMSection(romFile);
 	this->memory->ramSection = new MemorySection(0x00,0x10000);
 
 	//register init
@@ -44,11 +43,10 @@ Gameboy::Gameboy() {
 	memory->writeMemory(0xff49,0xff);
 
 	this->processor = new Processor(this->memory);
-	this->ppu = new PPU(memory,processor);
+	this->ppu = new PPU(memory,processor,screenSize);
 	this->joypad = new Joypad();
 	this->oam = new OAMDMA(memory);
 	this->timer = new Timer();
-
 
 	this-> apu = new APU(memory);
 }
@@ -61,48 +59,30 @@ Gameboy::~Gameboy() {
 	delete this->oam;
 	delete this->timer;
 	delete this->apu;
-	//fclose(log);
 }
 
 void Gameboy::clock() {
 	ppu->clock();
 	timer->clock(memory,processor);
+
 	if (procCD--<=0) {
-		/*if (processor->remainingInstructionTime==1 || processor->halted)
-			fprintf(log,"AF=%02X%02X BC=%02X%02X DE=%02X%02X HL=%02X%02X SP=%04X PC=%04X CURR=%02X\n",
-					processor->a,
-					processor->f,
-					processor->b,
-					processor->c,
-					processor->d,
-					processor->e,
-					processor->h,
-					processor->l,
-					processor->sp,
-					processor->halted  ? processor->pc-1 :processor->pc,
-					memory->readMemory(processor->pc));*/
+		procCD = 3;
 
 		processor->clock();
 		apu->clockRegisters();
-		if (processor->pc>=0x8000 && processor->pc<0xff00) printf("%x\n",processor->pc);
 		oam->clock();
+
 		if (memory->lastAccess==0xff00 || ppu->vBlank)
 			joypad->clock(memory);
-		procCD = 3;
 	}
 	apu->clock();
 }
 
-void Gameboy::test() {
+void Gameboy::run() {
 	while (!(processor->frozen)) {
 		auto start = steady_clock::now();
-		int i=0;
 		do  {
 			clock();
-			i++;
-			if (memory->romSection->changed) {
-				memory->romSection->changed = false;
-			}
 		} while (!ppu->vBlank && !(processor->frozen));
 
 		int time = 0;
@@ -113,48 +93,10 @@ void Gameboy::test() {
 		} while (time<16742 && !(joypad->speedUp));
 		memory->writeMemory(0xff04,memory->readMemory(0xff04)+1);
 
-
+		if (joypad->exit) return;
 	}
-	printf("Processor is frozen %.4x %.2x %i\n",processor->pc,memory->readMemory(processor->pc-1),memory->romSection->romBank);
-	for (list<Instruction>::iterator it=processor->instructionHistory.begin();
-			it!=processor->instructionHistory.end();
-			++it) {
-		printf("%.4x",(*it).addr);
-		for (int i=0;i<5;i++) {
-			printf(" %.2x",(*it).opcode[i]);
-		}
-		printf("\n");
-	}
-	//memory->printMemory(0x8000,0xffff);
-}
-
-void Gameboy::debugInstruction(uint8_t opcode) {
-	processor->frozen = false;
-	processor->halted = false;
-	processor->stopped = false;
-	processor->a = 1;
-	processor->f = 0;
-	processor->b = 0xa0;
-	processor->c = 3;
-	processor->d = 0xa0;
-	processor->e = 5;
-	processor->h = 0xa0;
-	processor->l = 0;
-	processor->sp = 0xa000;
-	processor->pc = 0x9000;
-	memory->writeMemory(0x9000,opcode);
-	memory->writeMemory(0x9001,0x05);
-	memory->writeMemory(0x9002,0xa0);
-	for (int i=0x9ffa;i<0xa00f;i++) memory->writeMemory(i,0);
-	memory->writeMemory(0xb000,0xd);
-	memory->writeMemory(0xb001,0xe);
-
-	executeInstruction(processor->getInstruction8(),processor);
-
-	printf("Opcode %.2x\n",opcode);
-	printf("a=%.2x b=%.2x c=%.2x d=%.2x e=%.2x h=%.2x l=%.2x\nf=%x\n",processor->a,processor->b,processor->c,processor->d,processor->e,processor->h,processor->l,processor->f);
-	memory->printMemory(0x9ffa,0xa00f);
-	printf("\n\n");
+	printf("Processor is frozen addr: %.4x opcode: %.2x romBank: %i",processor->pc,memory->readMemory(processor->pc-1),memory->romSection->romBank);
+	cout<<endl;
 }
 
 

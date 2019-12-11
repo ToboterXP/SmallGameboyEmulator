@@ -27,11 +27,8 @@ void AudioInterface::playSquareWave(int freq,int channel, int volume, int dutyCo
 
 	int sampleFreq = 2*sampleSpeed/freq;
 
-	//SDL_Log("start sound %i %i %i\n",freq,volume,dutyCount);
-
 	Uint16 * data = new Uint16[dutyCount*((int)sampleFreq)];
 	for (int h=0;h<dutyCount;h++) {
-		//SDL_Log("duty %i\n",freq,volume,dutyCount);
 		int fallingEdge = (sampleFreq*dutyValues[h])/8;
 		for (int i=h*sampleFreq;i<(h+1)*sampleFreq;i++) {
 			data[i] = i%sampleFreq<fallingEdge ? (maxAmplitude*volume)/7 : 0;
@@ -69,14 +66,11 @@ void AudioInterface::playNoise(int freq) {
 
 	Uint16 * data = new Uint16[sampleFreq*50];
 	for (int j=0;j<100;j++) {
-		SDL_Log("%i %i %i\n",(lsfr&1),(lsfr>>1)&1,(lsfr&1)^((lsfr>>1)&1));
-		SDL_Log("%x\n",lsfr);
 		uint8_t new_lsfr_bit = (lsfr&1)^((lsfr>>1)&1);
 		lsfr >>=1;
 		lsfr |= new_lsfr_bit<<15;
 		for (int i=j*sampleFreq;i<(j+1)*sampleFreq;i++) {
 			data[i] = new_lsfr_bit * maxAmplitude;
-			//printf("%i\n",data[i]);
 		}
 	}
 

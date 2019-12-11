@@ -77,7 +77,7 @@ int execute20_3f(uint8_t opcode, Processor * proc) {
 		prev1 = proc->getHL();
 		proc->setHL(proc->getHL() + proc->getHL());
 		proc->setFlag(SUB_FLAG,0);
-		proc->setFlag(HALF_CARRY_FLAG,(((prev1&0xf)+(proc->getHL()&0xf))&0x10)==0x10);
+		proc->setFlag(HALF_CARRY_FLAG,(((prev1&0xf)+(prev1&0xf))&0x10)==0x10);
 		proc->setFlag(CARRY_FLAG,prev1 > proc->getHL());
 		return 2;
 	case 0x2a: //ld a,(hl+)

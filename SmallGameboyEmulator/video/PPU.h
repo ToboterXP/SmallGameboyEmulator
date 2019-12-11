@@ -45,7 +45,7 @@ public:
 
 	bool vBlank = false;
 	uint8_t yDraw = 0;
-	PPU(MemoryManager * memory,Processor * proc);
+	PPU(MemoryManager * memory,Processor * proc, int screenSize);
 	virtual ~PPU();
 	void clock();
 	void drawPixel(uint8_t x,uint8_t y, uint8_t shade);

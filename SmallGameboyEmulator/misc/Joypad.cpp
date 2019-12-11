@@ -25,7 +25,7 @@ void Joypad::clock(MemoryManager * memory) {
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_QUIT:
-			exit(0);
+			exit = true;
 			break;
 		case SDL_KEYDOWN:
 			for (int i=0;i<8;i++) {

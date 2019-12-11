@@ -45,13 +45,11 @@ public:
 	OAMDMA * oam;
 	Timer * timer;
 	APU * apu;
-	Gameboy();
+	Gameboy(string romFile,int screenSize);
 	virtual ~Gameboy();
 
-	void test();
+	void run();
 	void clock();
-
-	void debugInstruction(uint8_t opcode);
 };
 
 

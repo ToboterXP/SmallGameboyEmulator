@@ -123,7 +123,6 @@ int executeCB(uint8_t opcode, Processor * proc) {
 		result = resetBit(source,(opcode-0x80)/8);
 	} else if (opcode >=0x40) { //bit *,b
 		proc->setFlag(ZERO_FLAG,!getBit(source,(opcode-0x40)/8));
-		//printf("bit %i, %i (zero %i)\n",(opcode-0x40)/8,source,proc->getFlag(ZERO_FLAG));
 		proc->setFlag(SUB_FLAG,0);
 		proc->setFlag(HALF_CARRY_FLAG,1);
 		return opcode%8==6 ? 4 :2;

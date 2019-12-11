@@ -12,10 +12,6 @@ namespace audio {
 
 APU::APU(MemoryManager * memory) {
 	this->memory = memory;
-	/*audio = new AudioInterface();
-	for (int i=0;i<4;i++) {
-		audio->silenceChannel(i);
-	}*/
 }
 
 APU::~APU() {
@@ -29,7 +25,6 @@ void APU::clockRegisters() {
 		c1_sweepShift = memory->readMemory(0xff10)&7;
 		c1_sweepInc = (memory->readMemory(0xff10)&(1<<3)) ? -1 : 1;
 		c1_sweepTime = (memory->readMemory(0xff10)&(7<<4))>>4;
-		//SDL_Log("c1 sweep %i %i %i %i\n",c1_sweepShift,c1_sweepInc,c1_sweepTime,c1_sweepTimer);
 	}
 
 	if (memory->lastAccess==0xff12) {
@@ -37,7 +32,6 @@ void APU::clockRegisters() {
 		c1_volume = (memory->readMemory(0xff12)&(15<<4))>>4;
 		c1_envelopeInc = (memory->readMemory(0xff12)&(1<<3)) ? 1 : -1;
 		c1_envelopeSweep = memory->readMemory(0xff12)&7;
-		//SDL_Log("c1 volume %i %i %i\n",c1_volume,c1_envelopeInc,c1_envelopeSweep);
 	}
 
 	if (memory->lastAccess == 0xff11) {
@@ -87,7 +81,6 @@ void APU::clockRegisters() {
 		c2_freq |= (memory->readMemory(0xff19)&7)<<8;
 
 		c2_duty = DUTY_CYCLES[(memory->readMemory(0xff16)&(3<<6))>>6];
-		//SDL_Log("c2 audio %i %i %i\n",c2_freq,c2_duty,c2_remaining);
 
 		c2_volumeTimer = c2_envelopeSweep*4;
 
@@ -124,8 +117,6 @@ void APU::clock() {
 		c1_enabled = false;
 		c2_enabled = false;
 		c3_enabled = false;
-		//audio->silenceChannel(CHANNEL_SQUARE_1);
-		//audio->silenceChannel(CHANNEL_SQUARE_2);
 		return;
 	}
 
@@ -138,7 +129,6 @@ void APU::clock() {
 				c1_enabled = false;
 				c1_remaining = -1;
 				memory->writeMemory(0xff26,memory->readMemory(0xff26)&(~1));
-				//audio->silenceChannel(CHANNEL_SQUARE_1);
 			}
 		}
 
@@ -149,7 +139,6 @@ void APU::clock() {
 				if (c1_freq>=2048) {
 					c1_enabled = false;
 					memory->writeMemory(0xff26,memory->readMemory(0xff26)&(~1));
-					//audio->silenceChannel(CHANNEL_SQUARE_1);
 				} else {
 					c1_force_reload = true;
 				}
@@ -181,7 +170,6 @@ void APU::clock() {
 				c2_enabled = false;
 				c2_remaining = -1;
 				memory->writeMemory(0xff26,memory->readMemory(0xff26)&(~2));
-				//audio->silenceChannel(CHANNEL_SQUARE_2);
 			}
 		}
 
@@ -200,7 +188,6 @@ void APU::clock() {
 				c3_enabled = false;
 				c3_remaining = -1;
 				memory->writeMemory(0xff26,memory->readMemory(0xff26)&(~4));
-				//audio->silenceChannel(CHANNEL_SQUARE_2);
 			}
 		}
 
@@ -209,7 +196,6 @@ void APU::clock() {
 				c4_enabled = false;
 				c4_remaining = -1;
 				memory->writeMemory(0xff26,memory->readMemory(0xff26)&(~8));
-				//audio->silenceChannel(CHANNEL_SQUARE_2);
 			}
 		}
 	}
